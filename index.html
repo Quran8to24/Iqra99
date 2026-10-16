@@ -597,6 +597,59 @@ body{padding-bottom:76px;}
   .player-track, .player-status{font-size:12px;}
 }
 
+/* ---------- Recitation checker ---------- */
+.listen-surah{background:transparent; cursor:pointer; font-family:inherit;}
+.surah-actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px;}
+.surah-actions .listen-surah{margin-top:0;}
+.listen-surah.recite-btn{border-color:var(--emerald); color:var(--emerald);}
+.listen-surah.recite-btn:hover{background:color-mix(in srgb, var(--emerald) 12%, transparent);}
+
+.recite-overlay{z-index:40; align-items:flex-start; padding:18px 14px 92px;}
+.recite-modal{max-width:820px; max-height:100%; display:flex; flex-direction:column;}
+.recite-modal .modal-body{overflow-y:auto; flex:1 1 auto;}
+.recite-note{font-size:12px; line-height:1.55; color:var(--ink-soft); margin:0 0 12px;}
+.recite-controls{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:8px;}
+.recite-controls label{font-size:12.5px; color:var(--ink-soft); display:flex; align-items:center; gap:6px;}
+.recite-controls input{
+  width:62px; background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius);
+  color:var(--ink); padding:6px 8px; font-family:inherit; font-size:13px; text-align:center;
+}
+.recite-counts{font-size:12.5px; color:var(--ink-soft); margin-left:auto;}
+.recite-status{font-size:13px; min-height:20px; margin:4px 0 8px; color:var(--ink-soft);}
+.recite-status.error{color:var(--danger);}
+.recite-status.live{color:var(--emerald);}
+.recite-legend{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:8px;}
+.recite-legend span{font-family:'Source Serif 4', serif; font-size:11.5px; direction:ltr; padding:1px 8px;}
+.recite-text{
+  direction:rtl; text-align:justify; text-align-last:right;
+  font-family:'Amiri', serif; font-size:var(--ar-size); line-height:2.35;
+  padding:14px 6px; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+}
+.recite-bism{text-align:center; margin-bottom:6px;}
+.rw{padding:0 3px; border-radius:4px; transition:background .15s ease, color .15s ease;}
+.rw.ok{color:var(--emerald);}
+.rw.wrong{color:var(--danger); background:color-mix(in srgb, var(--danger) 14%, transparent); text-decoration:underline wavy var(--danger);}
+.rw.missed{color:var(--danger); border-bottom:2px dashed var(--danger);}
+.rw.skip{opacity:.5;}
+.rw.cur{background:color-mix(in srgb, var(--gold-soft) 38%, transparent); box-shadow:0 0 0 2px color-mix(in srgb, var(--gold-soft) 55%, transparent);}
+.recite-end{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:26px; margin:0 2px;
+  border:1px solid var(--gold-soft); border-radius:50%;
+  font-size:10.5px; color:var(--gold); font-family:'Source Serif 4', serif; direction:ltr;
+}
+.recite-heard{font-size:12.5px; color:var(--ink-soft); margin-top:8px; min-height:22px;}
+.recite-heard span{font-family:'Amiri', serif; font-size:17px;}
+.recite-results{margin-top:16px;}
+.rr-score{font-size:22px; font-weight:600; color:var(--gold);}
+.rr-sub{font-size:12.5px; color:var(--ink-soft); margin:2px 0 8px;}
+.rr-ayah{border:1px solid var(--line); border-radius:6px; padding:10px 12px; margin-bottom:8px; font-size:13px;}
+.rr-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:4px;}
+.rr-hear{padding:5px 12px; font-size:12px;}
+.rr-line{margin:3px 0; color:var(--ink-soft);}
+.rr-words{font-family:'Amiri', serif; font-size:20px; direction:rtl; color:var(--ink); unicode-bidi:isolate;}
+.recite-again{margin-top:10px;}
+
 /* ---------- Account modal ---------- */
 .modal-overlay{
   display:none;
@@ -726,6 +779,16 @@ body{padding-bottom:76px;}
       <button class="icon-btn" id="acctClose" aria-label="Close">✕</button>
     </div>
     <div class="modal-body" id="acctBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay recite-overlay" id="reciteOverlay">
+  <div class="modal recite-modal" role="dialog" aria-label="Recitation practice">
+    <div class="modal-head">
+      <span id="reciteTitle">Recite</span>
+      <button class="icon-btn" id="reciteClose" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body" id="reciteBody"></div>
   </div>
 </div>
 
@@ -882,9 +945,12 @@ body{padding-bottom:76px;}
     } else {
       html += '  <div class="no-wbw-note">This surah reads with the full Arabic text and translation. Word‑by‑word breakdown currently covers 22 short surahs, marked with a dot in the list at left.</div>';
     }
-    html += '  <button class="listen-surah" data-surah="'+s.no+'" data-action="play-surah">';
-    html += '    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play full surah';
-    html += '  </button>';
+    html += '  <div class="surah-actions">';
+    html += '    <button class="listen-surah" data-surah="'+s.no+'" data-action="play-surah">';
+    html += '      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play full surah';
+    html += '    </button>';
+    html += '    <button class="listen-surah recite-btn" data-surah="'+s.no+'" data-action="recite-surah">\ud83c\udfa4 Recite &amp; check</button>';
+    html += '  </div>';
     html += '</div>';
 
     if(state.surah !== 1 && state.surah !== 9){
@@ -983,9 +1049,12 @@ body{padding-bottom:76px;}
     });
     html += '</div>';
     html += '<div style="text-align:center;margin-top:14px;"><button class="mushaf-toggle-trans" id="mushafTransToggle">'+(state.mushafTrans ? 'Hide translations' : 'Show translations for this surah')+'</button></div>';
-    html += '  <button class="listen-surah" style="margin-top:14px;" data-surah="'+s.no+'" data-action="play-surah">';
-    html += '    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play full surah';
-    html += '  </button>';
+    html += '  <div class="surah-actions">';
+    html += '    <button class="listen-surah" data-surah="'+s.no+'" data-action="play-surah">';
+    html += '      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play full surah';
+    html += '    </button>';
+    html += '    <button class="listen-surah recite-btn" data-surah="'+s.no+'" data-action="recite-surah">\ud83c\udfa4 Recite &amp; check</button>';
+    html += '  </div>';
     html += '</div>'; // .mushaf-page
 
     html += '<div class="mushaf-nav">';
@@ -1133,6 +1202,7 @@ body{padding-bottom:76px;}
     surah: null,
     ayah: null,
     mode: null, // 'ayah' | 'surah'
+    single: false,
     cache: {}
   };
 
@@ -1178,8 +1248,9 @@ body{padding-bottom:76px;}
     return (data.audio || []).find(function(a){ return a.reciter_id === reciterId; });
   }
 
-  function playAyah(surah, ayah){
+  function playAyah(surah, ayah, single){
     player.mode = 'ayah';
+    player.single = !!single;
     player.surah = surah;
     player.ayah = ayah;
     var s = DATA.surahs[surah - 1];
@@ -1239,6 +1310,11 @@ body{padding-bottom:76px;}
         playSurah(parseInt(btn.getAttribute('data-surah'),10));
       });
     });
+    els.content.querySelectorAll('[data-action="recite-surah"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        openRecite(parseInt(btn.getAttribute('data-surah'),10));
+      });
+    });
   }
 
   els.playerToggle.addEventListener('click', function(){
@@ -1272,7 +1348,7 @@ body{padding-bottom:76px;}
   els.playerAudio.addEventListener('play', function(){ els.playerToggle.textContent = '⏸'; });
   els.playerAudio.addEventListener('pause', function(){ els.playerToggle.textContent = '▶'; });
   els.playerAudio.addEventListener('ended', function(){
-    if(player.mode === 'ayah' && player.surah){
+    if(player.mode === 'ayah' && player.surah && !player.single){
       var total = DATA.surahs[player.surah - 1].total_ayah;
       if(player.ayah < total) playAyah(player.surah, player.ayah + 1);
       else if(player.surah < 114) playAyah(player.surah + 1, 1);
@@ -1624,6 +1700,394 @@ body{padding-bottom:76px;}
   });
 
   checkExistingSession(false);
+
+  // ---------------- Recitation checker (browser speech recognition) ----------------
+  // Compares the words you speak against the surah text. It checks WORDS and ORDER only;
+  // browser speech recognition cannot judge tashkeel (vowels) or tajweed rules.
+  var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var recite = {
+    surah: null, startAyah: 1, exp: [], spans: [],
+    running: false, finished: true, fatal: false, rec: null, stopTimer: null,
+    finalWords: [], interimWords: [], result: null, lastCur: 0
+  };
+  var simCache = {};
+
+  function byId(id){ return document.getElementById(id); }
+
+  // Strip vowels/Quranic marks and unify letter variants so spoken text and Uthmani text can be compared.
+  function normAr(s){
+    return String(s)
+      .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640\u08D3-\u08FF]/g, '')
+      .replace(/[\u0622\u0623\u0625\u0671]/g, '\u0627')
+      .replace(/\u0649/g, '\u064A')
+      .replace(/\u0629/g, '\u0647')
+      .replace(/\u0624/g, '\u0648')
+      .replace(/\u0626/g, '\u064A')
+      .replace(/\u0621/g, '')
+      .replace(/[^\u0621-\u064A]/g, '');
+  }
+  function spokenWords(text){
+    return String(text).split(/\s+/).map(normAr).filter(Boolean);
+  }
+
+  function lev(a, b){
+    var m = a.length, n = b.length, i, j;
+    if(!m) return n;
+    if(!n) return m;
+    var prev = new Array(n + 1), cur = new Array(n + 1);
+    for(j = 0; j <= n; j++) prev[j] = j;
+    for(i = 1; i <= m; i++){
+      cur[0] = i;
+      for(j = 1; j <= n; j++){
+        var c = a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1;
+        cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + c);
+      }
+      var t = prev; prev = cur; cur = t;
+    }
+    return prev[n];
+  }
+  function sim(a, b){
+    if(a === b) return 1;
+    var key = a + '|' + b;
+    var v = simCache[key];
+    if(v !== undefined) return v;
+    v = 1 - lev(a, b) / Math.max(a.length, b.length);
+    simCache[key] = v;
+    return v;
+  }
+
+  // Banded word-level alignment (edit distance) of spoken words against expected words.
+  // Spoken words may end anywhere in the expected text. Returns a status per expected word.
+  function alignRecite(rec, exp){
+    var R = rec.length, E = exp.length;
+    var LO = 30, HI = 100, W = LO + HI + 1;
+    var INF = 1e9, GAP = 0.9, OK_T = 0.6;
+    var cost = new Array(R + 1), dir = new Array(R + 1), i, k, j;
+    function jOf(ii, kk){ return ii - LO + kk; }
+    for(i = 0; i <= R; i++){
+      cost[i] = new Float32Array(W).fill(INF);
+      dir[i] = new Uint8Array(W);
+    }
+    for(k = 0; k < W; k++){
+      j = jOf(0, k);
+      if(j >= 0 && j <= E){ cost[0][k] = j * GAP; dir[0][k] = 2; }
+    }
+    for(i = 1; i <= R; i++){
+      for(k = 0; k < W; k++){
+        j = jOf(i, k);
+        if(j < 0 || j > E) continue;
+        var best = INF, d = 0, c;
+        if(k + 1 < W){ c = cost[i - 1][k + 1] + GAP; if(c < best){ best = c; d = 1; } }       // extra spoken word
+        if(k - 1 >= 0 && j - 1 >= 0){ c = cost[i][k - 1] + GAP; if(c < best){ best = c; d = 2; } } // skipped expected word
+        if(j - 1 >= 0){ c = cost[i - 1][k] + (1 - sim(rec[i - 1], exp[j - 1].norm)); if(c < best){ best = c; d = 3; } }
+        cost[i][k] = best; dir[i][k] = d;
+      }
+    }
+    var bestK = 0, bestC = INF;
+    for(k = 0; k < W; k++){
+      j = jOf(R, k);
+      if(j < 0 || j > E) continue;
+      if(cost[R][k] <= bestC){ bestC = cost[R][k]; bestK = k; }
+    }
+    var end = jOf(R, bestK);
+    var status = new Array(E), heardAt = {}, recAt = {}, extras = [];
+    i = R; k = bestK;
+    while(i > 0 || jOf(i, k) > 0){
+      j = jOf(i, k);
+      if(i === 0){ status[j - 1] = 'missed'; k--; continue; }
+      var dd = dir[i][k];
+      if(dd === 3){
+        var s = sim(rec[i - 1], exp[j - 1].norm);
+        if(s >= OK_T){ status[j - 1] = 'ok'; }
+        else { status[j - 1] = 'wrong'; heardAt[j - 1] = rec[i - 1]; }
+        recAt[j - 1] = i - 1;
+        i--;
+      } else if(dd === 1){ extras.push(rec[i - 1]); i--; k++; }
+      else if(dd === 2){ status[j - 1] = 'missed'; k--; }
+      else break;
+    }
+    // The bismillah before a surah is optional: if it was skipped entirely, don't count it.
+    var optIdx = [], allMissed = true;
+    for(j = 0; j < E; j++){ if(exp[j].optional){ optIdx.push(j); if(j >= end || status[j] !== 'missed') allMissed = false; } }
+    if(optIdx.length && allMissed) optIdx.forEach(function(q){ status[q] = 'skip'; });
+    var ok = 0, wrong = 0, missed = 0;
+    for(j = 0; j < end; j++){
+      if(status[j] === 'ok') ok++; else if(status[j] === 'wrong') wrong++; else if(status[j] === 'missed') missed++;
+    }
+    return {status: status, heardAt: heardAt, recAt: recAt, extras: extras, end: end, ok: ok, wrong: wrong, missed: missed};
+  }
+
+  function setReciteStatus(msg, kind){
+    var el = byId('reciteStatus');
+    if(!el) return;
+    el.textContent = msg;
+    el.className = 'recite-status' + (kind ? ' ' + kind : '');
+  }
+  function setReciteToggle(){
+    var b = byId('reciteToggle');
+    if(!b) return;
+    if(recite.running) b.textContent = '⏹ Stop & see results';
+    else b.textContent = recite.result ? '🎤 Recite again' : '🎤 Start reciting';
+  }
+
+  function buildReciteText(){
+    var ayat = DATA.ayat[recite.surah];
+    var exp = [], html = '';
+    function pushTokens(text, ayahNo, optional){
+      text.split(/\s+/).filter(Boolean).forEach(function(tok){
+        var n = normAr(tok), attr = '';
+        if(n){ attr = ' data-i="' + exp.length + '"'; exp.push({norm: n, raw: tok, ayah: ayahNo, optional: !!optional}); }
+        html += '<span class="rw"' + attr + '>' + tok + '</span> ';
+      });
+    }
+    if(recite.startAyah === 1 && recite.surah !== 1 && recite.surah !== 9){
+      html += '<div class="recite-bism">';
+      pushTokens(DATA.ayat[1][0].ar, 0, true);
+      html += '</div>';
+    }
+    ayat.forEach(function(a){
+      if(a.a < recite.startAyah) return;
+      pushTokens(a.ar, a.a, false);
+      html += '<span class="recite-end">' + a.a + '</span> ';
+    });
+    recite.exp = exp;
+    var box = byId('reciteText');
+    box.innerHTML = html;
+    recite.spans = [];
+    box.querySelectorAll('.rw[data-i]').forEach(function(el){
+      recite.spans[parseInt(el.getAttribute('data-i'), 10)] = el;
+    });
+    recite.lastCur = 0;
+    if(recite.spans[0]) recite.spans[0].className = 'rw cur';
+    byId('reciteHeard').innerHTML = '';
+    byId('reciteCounts').textContent = '';
+  }
+
+  function paintRecite(res, finalCount){
+    var cur = res.end;
+    for(var j = 0; j < recite.exp.length; j++){
+      var el = recite.spans[j];
+      if(!el) continue;
+      var st = j < res.end ? res.status[j] : '';
+      if(st === 'wrong' && res.recAt[j] >= finalCount) st = 'pending'; // still being recognised: don't flag yet
+      var cls = 'rw' + (st && st !== 'pending' ? ' ' + st : '') + (j === cur ? ' cur' : '');
+      if(el.className !== cls) el.className = cls;
+      if(st === 'wrong') el.title = 'Heard: ' + res.heardAt[j];
+      else if(el.hasAttribute('title')) el.removeAttribute('title');
+    }
+    if(cur !== recite.lastCur){
+      recite.lastCur = cur;
+      var ce = recite.spans[cur] || recite.spans[cur - 1];
+      if(ce && ce.scrollIntoView) ce.scrollIntoView({block: 'center', behavior: 'smooth'});
+    }
+  }
+
+  function updateReciteView(isFinal){
+    var rec = recite.finalWords.concat(recite.interimWords);
+    var finalCount = isFinal ? rec.length : recite.finalWords.length;
+    var res = alignRecite(rec, recite.exp);
+    recite.result = res;
+    paintRecite(res, finalCount);
+    byId('reciteHeard').innerHTML = rec.length ? 'Heard: <span dir="rtl">' + escapeHtml(rec.slice(-8).join(' ')) + '</span>' : '';
+    byId('reciteCounts').textContent = '✓ ' + res.ok + '   ✗ ' + (res.wrong + res.missed);
+  }
+
+  function renderReciteResults(res){
+    var box = byId('reciteResults');
+    var heardAny = recite.finalWords.length + recite.interimWords.length;
+    if(!heardAny){
+      box.innerHTML = '<div class="acct-msg error">No recitation was picked up. Check that the microphone is allowed for this site, speak close to it, and try again.</div>';
+      return;
+    }
+    var covered = res.ok + res.wrong + res.missed;
+    if(!covered){
+      box.innerHTML = '<div class="acct-msg error">I heard speech but couldn\u2019t match it to this surah. Make sure you started at the ayah chosen above.</div>';
+      return;
+    }
+    var pct = Math.round(100 * res.ok / covered);
+    var byAyah = {}, order = [];
+    for(var j = 0; j < res.end; j++){
+      var st = res.status[j];
+      if(st !== 'wrong' && st !== 'missed') continue;
+      var a = recite.exp[j].ayah;
+      if(!byAyah[a]){ byAyah[a] = {missed: [], wrong: []}; order.push(a); }
+      if(st === 'missed') byAyah[a].missed.push(recite.exp[j].raw);
+      else byAyah[a].wrong.push({raw: recite.exp[j].raw, heard: res.heardAt[j]});
+    }
+    var lastAyah = recite.exp[res.end - 1].ayah;
+    var html = '<div class="rr-score">' + pct + '% of words matched</div>';
+    html += '<div class="rr-sub">' + res.ok + ' of ' + covered + ' words matched \u00b7 ' +
+      (res.end < recite.exp.length ? 'you got as far as ' + (lastAyah ? 'ayah ' + lastAyah : 'the bismillah') : 'you reached the end') + '</div>';
+    if(res.extras.length >= 3){
+      html += '<div class="rr-sub">' + res.extras.length + ' extra words were heard that aren\u2019t in the text (or the browser misheard).</div>';
+    }
+    if(!order.length){
+      html += '<div class="acct-msg ok">Every word you recited matched the text. Vowels and tajweed can\u2019t be checked here \u2014 compare with the reciter using the \u25b6 buttons in the player.</div>';
+    } else {
+      html += '<p class="recite-note">Red words may be real slips or just the browser mishearing \u2014 treat them as hints, and use \u201cHear ayah\u201d to check against the reciter.</p>';
+    }
+    order.forEach(function(a){
+      var g = byAyah[a];
+      html += '<div class="rr-ayah"><div class="rr-head"><b>' + (a ? 'Ayah ' + a : 'Bismillah') + '</b>';
+      if(a) html += '<button class="btn-secondary rr-hear" data-ayah="' + a + '">\u25b6 Hear ayah</button>';
+      html += '</div>';
+      if(g.missed.length) html += '<div class="rr-line">Skipped: <span class="rr-words">' + g.missed.join(' ') + '</span></div>';
+      g.wrong.forEach(function(w){
+        html += '<div class="rr-line">Expected <span class="rr-words">' + w.raw + '</span> \u2014 heard <span class="rr-words">' + escapeHtml(w.heard) + '</span></div>';
+      });
+      html += '</div>';
+    });
+    box.innerHTML = html;
+    box.querySelectorAll('.rr-hear').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        playAyah(recite.surah, parseInt(btn.getAttribute('data-ayah'), 10), true);
+      });
+    });
+    if(box.scrollIntoView) box.scrollIntoView({behavior: 'smooth', block: 'start'});
+  }
+
+  function finishRecite(){
+    if(recite.finished) return;
+    recite.finished = true;
+    clearTimeout(recite.stopTimer);
+    recite.running = false;
+    if(recite.fatal){ setReciteToggle(); return; }
+    updateReciteView(true);
+    setReciteToggle();
+    setReciteStatus('Done. Here\u2019s how it went:');
+    renderReciteResults(recite.result);
+  }
+
+  function stopRecite(){
+    recite.running = false;
+    setReciteToggle();
+    setReciteStatus('Finishing up\u2026');
+    try{ recite.rec.stop(); }catch(e){}
+    clearTimeout(recite.stopTimer);
+    recite.stopTimer = setTimeout(finishRecite, 1800);
+  }
+
+  function startRecite(){
+    if(!SpeechRec){
+      setReciteStatus('Speech recognition isn\u2019t available in this browser. Try Chrome or Edge (desktop or Android).', 'error');
+      return;
+    }
+    try{ els.playerAudio.pause(); }catch(e){}
+    clearHighlight();
+    byId('reciteResults').innerHTML = '';
+    recite.finalWords = []; recite.interimWords = []; recite.result = null;
+    recite.fatal = false; recite.finished = false;
+    simCache = {};
+    buildReciteText();
+
+    var rec = new SpeechRec();
+    rec.lang = 'ar-SA';
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+    var seen = {};
+    rec.onresult = function(ev){
+      var interim = [];
+      for(var i = ev.resultIndex; i < ev.results.length; i++){
+        var r = ev.results[i];
+        var ws = spokenWords(r[0].transcript);
+        if(r.isFinal){
+          if(!seen[i]){ seen[i] = true; recite.finalWords = recite.finalWords.concat(ws); }
+        } else {
+          interim = interim.concat(ws);
+        }
+      }
+      recite.interimWords = interim;
+      updateReciteView(false);
+    };
+    rec.onerror = function(ev){
+      var e = ev && ev.error;
+      if(e === 'no-speech' || e === 'aborted') return;
+      var msg = 'Speech recognition error (' + e + ').';
+      if(e === 'not-allowed' || e === 'service-not-allowed') msg = 'Microphone access is blocked. Allow the microphone for this site in your browser\u2019s address-bar settings, then try again.';
+      else if(e === 'audio-capture') msg = 'No microphone was found.';
+      else if(e === 'network') msg = 'Speech recognition needs an internet connection (the browser\u2019s speech service processes your audio).';
+      recite.fatal = true;
+      recite.running = false;
+      setReciteStatus(msg, 'error');
+    };
+    rec.onend = function(){
+      if(recite.running && !recite.fatal){
+        seen = {};
+        try{ rec.start(); }
+        catch(err){ setTimeout(function(){ if(recite.running){ try{ rec.start(); }catch(e2){} } }, 250); }
+      } else {
+        finishRecite();
+      }
+    };
+    recite.rec = rec;
+    recite.running = true;
+    setReciteToggle();
+    setReciteStatus('Listening\u2026 recite from ' + (recite.startAyah === 1 ? 'the beginning of the surah' : 'ayah ' + recite.startAyah) + '.', 'live');
+    try{ rec.start(); }
+    catch(err){
+      recite.fatal = true; recite.running = false;
+      setReciteStatus('Couldn\u2019t start the microphone: ' + err.message, 'error');
+      setReciteToggle();
+    }
+  }
+
+  function openRecite(surah){
+    var s = DATA.surahs[surah - 1];
+    recite.surah = surah; recite.startAyah = 1;
+    recite.running = false; recite.finished = true; recite.fatal = false; recite.result = null;
+    byId('reciteTitle').textContent = 'Recite \u2014 ' + s.name_roman;
+    var html = '';
+    html += '<p class="recite-note">Recite and this page follows along, comparing the <b>words and their order</b> with the text. Your browser\u2019s speech service (Google\u2019s, in Chrome) transcribes your voice; this site never records or stores audio. It <b>can\u2019t judge tashkeel (vowels) or tajweed rules</b> \u2014 use \u201cHear ayah\u201d afterwards to compare with the reciter.</p>';
+    html += '<div class="recite-controls">';
+    html += '  <label>Start at ayah <input type="number" id="reciteStart" min="1" max="' + s.total_ayah + '" value="1"></label>';
+    html += '  <button class="btn-primary" id="reciteToggle">\ud83c\udfa4 Start reciting</button>';
+    html += '  <span class="recite-counts" id="reciteCounts"></span>';
+    html += '</div>';
+    html += '<div class="recite-status" id="reciteStatus"></div>';
+    html += '<div class="recite-legend"><span class="rw ok">matched</span><span class="rw wrong">different</span><span class="rw missed">skipped</span><span class="rw cur">next word</span></div>';
+    html += '<div class="recite-text" id="reciteText"></div>';
+    html += '<div class="recite-heard" id="reciteHeard"></div>';
+    html += '<div class="recite-results" id="reciteResults"></div>';
+    byId('reciteBody').innerHTML = html;
+    byId('reciteToggle').addEventListener('click', function(){
+      if(recite.running) stopRecite(); else startRecite();
+    });
+    byId('reciteStart').addEventListener('change', function(){
+      if(recite.running){ this.value = recite.startAyah; return; }
+      var v = parseInt(this.value, 10);
+      if(isNaN(v) || v < 1) v = 1;
+      if(v > s.total_ayah) v = s.total_ayah;
+      this.value = v;
+      recite.startAyah = v;
+      recite.result = null;
+      byId('reciteResults').innerHTML = '';
+      buildReciteText();
+      setReciteToggle();
+    });
+    buildReciteText();
+    if(!SpeechRec){
+      setReciteStatus('Speech recognition isn\u2019t available in this browser. Try Chrome or Edge (desktop or Android).', 'error');
+      byId('reciteToggle').disabled = true;
+    } else {
+      setReciteStatus('Press Start, allow the microphone, then recite.');
+    }
+    byId('reciteOverlay').classList.add('show');
+  }
+
+  function closeRecite(){
+    if(recite.running){
+      recite.running = false;
+      recite.finished = true;
+      try{ recite.rec.abort(); }catch(e){}
+    }
+    clearTimeout(recite.stopTimer);
+    byId('reciteOverlay').classList.remove('show');
+  }
+  byId('reciteClose').addEventListener('click', closeRecite);
+  byId('reciteOverlay').addEventListener('click', function(e){
+    if(e.target === byId('reciteOverlay')) closeRecite();
+  });
 
   renderSurahList('');
   render();
