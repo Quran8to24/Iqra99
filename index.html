@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Maqra — Word by Word Qur'an</title>
+<title>Iqra24</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:ital@0;1&family=Amiri+Quran&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
@@ -649,6 +649,12 @@ body{padding-bottom:76px;}
 .rr-line{margin:3px 0; color:var(--ink-soft);}
 .rr-words{font-family:'Amiri', serif; font-size:20px; direction:rtl; color:var(--ink); unicode-bidi:isolate;}
 .recite-again{margin-top:10px;}
+
+.recite-mic{margin:0 0 12px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12.5px;}
+.mic-line{line-height:1.55; flex:1 1 260px;}
+.mic-line.ok{color:var(--emerald); font-weight:600;}
+.mic-line.bad{color:var(--danger);}
+.mic-hint{color:var(--ink-soft);}
 
 /* ---------- Account modal ---------- */
 .modal-overlay{
@@ -1967,7 +1973,7 @@ body{padding-bottom:76px;}
     recite.stopTimer = setTimeout(finishRecite, 1800);
   }
 
-  function startRecite(){
+  function beginRecite(){
     if(!SpeechRec){
       setReciteStatus('Speech recognition isn\u2019t available in this browser. Try Chrome or Edge (desktop or Android).', 'error');
       return;
@@ -2006,6 +2012,7 @@ body{padding-bottom:76px;}
       var msg = 'Speech recognition error (' + e + ').';
       if(e === 'not-allowed' || e === 'service-not-allowed') msg = 'Microphone access is blocked. Allow the microphone for this site in your browser\u2019s address-bar settings, then try again.';
       else if(e === 'audio-capture') msg = 'No microphone was found.';
+      if(e === 'not-allowed' || e === 'service-not-allowed'){ micState = 'denied'; renderMicRow(); }
       else if(e === 'network') msg = 'Speech recognition needs an internet connection (the browser\u2019s speech service processes your audio).';
       recite.fatal = true;
       recite.running = false;
@@ -2032,6 +2039,80 @@ body{padding-bottom:76px;}
     }
   }
 
+  // ---- Microphone permission: ask the browser, then the user approves in its pop-up ----
+  var micState = 'unknown'; // 'granted' | 'prompt' | 'denied' | 'unknown'
+  function micSupported(){
+    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  }
+  function queryMic(){
+    if(!navigator.permissions || !navigator.permissions.query) return Promise.resolve('unknown');
+    return navigator.permissions.query({name: 'microphone'}).then(function(p){
+      p.onchange = function(){ micState = p.state; renderMicRow(); };
+      return p.state;
+    }).catch(function(){ return 'unknown'; });
+  }
+  function renderMicRow(){
+    var box = byId('reciteMic');
+    if(!box || !SpeechRec) return;
+    var html;
+    if(window.isSecureContext === false){
+      html = '<div class="mic-line bad">The microphone only works on secure pages. Open this site from its https:// address.</div>';
+    } else if(micState === 'granted'){
+      html = '<div class="mic-line ok">\u2713 Microphone allowed</div>';
+    } else if(micState === 'denied'){
+      html = '<div class="mic-line bad"><b>The microphone is blocked for this site.</b> Click the icon at the left of the address bar (\ud83d\udd12 or sliders), open <i>Site settings</i> \u2192 <i>Microphone</i> \u2192 <i>Allow</i>. This panel updates by itself once you do. If this is a school or work device, an administrator may have blocked the microphone.</div>' +
+             '<button class="btn-secondary" id="micAllowBtn">Check again</button>';
+    } else {
+      html = '<button class="btn-primary" id="micAllowBtn">\ud83c\udfa4 Allow microphone</button>' +
+             '<span class="mic-hint">Your browser will show a pop-up \u2014 choose <b>Allow</b>.</span>';
+    }
+    box.innerHTML = html;
+    var b = byId('micAllowBtn');
+    if(b) b.addEventListener('click', requestMic);
+  }
+  function requestMic(){
+    if(window.isSecureContext === false){ renderMicRow(); return Promise.resolve({ok: false}); }
+    if(!micSupported()){ return Promise.resolve({ok: true, unsupported: true}); } // speech engine asks on its own
+    setReciteStatus('Your browser is asking to use the microphone \u2014 choose Allow in its pop-up\u2026', 'live');
+    return navigator.mediaDevices.getUserMedia({audio: true}).then(function(stream){
+      stream.getTracks().forEach(function(t){ t.stop(); }); // permission is all we need here
+      micState = 'granted';
+      renderMicRow();
+      setReciteStatus('Microphone allowed. Press Start reciting when you\u2019re ready.');
+      return {ok: true};
+    }).catch(function(err){
+      var name = err && err.name;
+      if(name === 'NotFoundError' || name === 'DevicesNotFoundError'){
+        setReciteStatus('No microphone was found on this device.', 'error');
+        return {ok: false};
+      }
+      if(name === 'NotAllowedError' || name === 'PermissionDeniedError' || name === 'SecurityError'){
+        // Closing the pop-up without choosing leaves the state at "prompt"; a real block says "denied".
+        return queryMic().then(function(s){
+          micState = (s === 'unknown') ? 'denied' : s;
+          renderMicRow();
+          if(micState === 'prompt') setReciteStatus('No problem \u2014 press Allow microphone again whenever you\u2019re ready.');
+          else setReciteStatus('Microphone access wasn\u2019t allowed.', 'error');
+          return {ok: false};
+        });
+      }
+      setReciteStatus('Couldn\u2019t open the microphone (' + (name || 'unknown error') + ').', 'error');
+      return {ok: false};
+    });
+  }
+  function startRecite(){
+    if(!SpeechRec){
+      setReciteStatus('Speech recognition isn\u2019t available in this browser. Try Chrome or Edge (desktop or Android).', 'error');
+      return;
+    }
+    if(micState !== 'granted' && (micSupported() || window.isSecureContext === false)){
+      // Ask the browser first. After approving, the user presses Start again (a fresh tap keeps every browser happy).
+      requestMic();
+      return;
+    }
+    beginRecite();
+  }
+
   function openRecite(surah){
     var s = DATA.surahs[surah - 1];
     recite.surah = surah; recite.startAyah = 1;
@@ -2039,6 +2120,7 @@ body{padding-bottom:76px;}
     byId('reciteTitle').textContent = 'Recite \u2014 ' + s.name_roman;
     var html = '';
     html += '<p class="recite-note">Recite and this page follows along, comparing the <b>words and their order</b> with the text. Your browser\u2019s speech service (Google\u2019s, in Chrome) transcribes your voice; this site never records or stores audio. It <b>can\u2019t judge tashkeel (vowels) or tajweed rules</b> \u2014 use \u201cHear ayah\u201d afterwards to compare with the reciter.</p>';
+    html += '<div class="recite-mic" id="reciteMic"></div>';
     html += '<div class="recite-controls">';
     html += '  <label>Start at ayah <input type="number" id="reciteStart" min="1" max="' + s.total_ayah + '" value="1"></label>';
     html += '  <button class="btn-primary" id="reciteToggle">\ud83c\udfa4 Start reciting</button>';
@@ -2073,6 +2155,9 @@ body{padding-bottom:76px;}
       setReciteStatus('Press Start, allow the microphone, then recite.');
     }
     byId('reciteOverlay').classList.add('show');
+    micState = 'unknown';
+    renderMicRow();
+    queryMic().then(function(s){ micState = s; renderMicRow(); });
   }
 
   function closeRecite(){
