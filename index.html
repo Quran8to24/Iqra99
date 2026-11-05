@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -61,6 +61,9 @@ body{
   font-family:'Source Serif 4', Georgia, serif;
   min-height:100vh;
   transition:background .25s ease, color .25s ease;
+}
+*, *::before, *::after{
+  cursor:url("quran-cursor.png") 32 32, auto !important;
 }
 a{color:inherit;}
 button{font-family:inherit;}
@@ -178,16 +181,6 @@ button{font-family:inherit;}
   background:color-mix(in srgb, var(--paper) 92%, transparent);
   backdrop-filter:blur(6px);
   border-bottom:1px solid var(--line);
-}
-.beta-label {
-  position: absolute;
-  top: 10px; /* Adjust this number to push it further down or up */
-  right: 589px;
-  color: var(--ink-soft);
-  font-size: 16px;
-  line-height: 1;
-  opacity: .45;
-  pointer-events: none;
 }
 .icon-btn{
   background:transparent;
@@ -618,6 +611,37 @@ body{padding-bottom:76px;}
   border-color:var(--danger);
   color:var(--danger);
 }
+.recite-settings{position:relative;}
+.recite-settings>summary{list-style:none;}
+.recite-settings>summary::-webkit-details-marker{display:none;}
+.recite-settings-popover{
+  position:absolute;
+  z-index:15;
+  top:calc(100% + 8px);
+  left:50%;
+  transform:translateX(-50%);
+  width:min(290px, calc(100vw - 32px));
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:var(--paper);
+  box-shadow:0 6px 24px rgba(0,0,0,.16);
+  text-align:left;
+}
+.recite-settings-popover label{display:block; font-size:12.5px; font-weight:600;}
+.recite-settings-popover input{width:100%; margin:12px 0 4px; accent-color:var(--emerald);}
+.recite-settings-scale{display:flex; justify-content:space-between; color:var(--ink-soft); font-size:11px;}
+.recite-settings-popover p{margin:10px 0 0; color:var(--ink-soft); font-size:12px; line-height:1.45;}
+.recite-summary{
+  flex:1 1 100%;
+  min-height:0;
+  color:var(--ink-soft);
+  font-size:12.5px;
+  line-height:1.5;
+}
+.recite-summary:empty{display:none;}
+.recite-summary.error{color:var(--danger);}
+.recite-summary.success{color:var(--emerald);}
 .recite-word{border-radius:3px; transition:background .12s ease, color .12s ease, box-shadow .12s ease;}
 .recite-word.recite-ok{color:var(--emerald);}
 .recite-word.recite-wrong{color:var(--danger); background:color-mix(in srgb, var(--danger) 15%, transparent); text-decoration:underline wavy var(--danger);}
@@ -806,6 +830,7 @@ body{padding-bottom:76px;}
         <span class="legend hint-tip" data-tip="Full word-by-word breakdown is available for 22 short, frequently‑memorized surahs, marked with a dot in the list."><span class="wbw-dot"></span> = available</span>
       </div>
       <div class="spacer"></div>
+      <div class="spacer"></div>
       <div class="font-ctrl">
         <button id="fontDown" aria-label="Smaller Arabic text">A−</button>
         <button id="fontUp" aria-label="Larger Arabic text">A+</button>
@@ -815,7 +840,6 @@ body{padding-bottom:76px;}
         <span class="account-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.5c-3.3 0-9.8 1.6-9.8 4.9v2.4h19.6v-2.4c0-3.3-6.5-4.9-9.8-4.9z"/></svg></span>
         <span id="accountBtnLabel">Sign in</span>
       </button>
-      <span class="beta-label" aria-label="Beta version 2.0">Beta 2.0</span>
     </div>
 
     <div class="content" id="content"></div>
@@ -979,6 +1003,24 @@ body{padding-bottom:76px;}
     }).join(' ');
   }
 
+  function renderReciteControls(surah){
+    var labels = ['Very lenient', 'Lenient', 'Balanced', 'Strict', 'Very strict'];
+    return '<div class="surah-actions">' +
+      '<button class="listen-surah" data-surah="'+surah+'" data-action="play-surah">' +
+      '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play full surah</button>' +
+      '<button class="listen-surah recite-btn" data-surah="'+surah+'" data-action="recite-surah" aria-pressed="false">🎤 Recite &amp; check</button>' +
+      '<details class="recite-settings">' +
+      '<summary class="listen-surah">Quran Recognition Settings</summary>' +
+      '<div class="recite-settings-popover">' +
+      '<label for="reciteStrictness">Grading strictness: <output data-recognition-value>'+labels[reciteStrictness - 1]+'</output></label>' +
+      '<input id="reciteStrictness" data-action="recite-strictness" type="range" min="1" max="5" step="1" value="'+reciteStrictness+'" aria-valuetext="'+labels[reciteStrictness - 1]+'">' +
+      '<div class="recite-settings-scale"><span>Lenient</span><span>Strict</span></div>' +
+      '<p>Choose how closely a spoken word must match the Quran text to count as correct. Changes apply immediately.</p>' +
+      '</div></details>' +
+      '<span class="recite-summary" data-recognition-summary role="status" aria-live="polite"></span>' +
+      '</div>';
+  }
+
   function renderSurah(){
     reciteMarkupIndex = 0;
     var s = DATA.surahs[state.surah - 1];
@@ -1000,12 +1042,7 @@ body{padding-bottom:76px;}
     } else {
       html += '  <div class="no-wbw-note">This surah reads with the full Arabic text and translation. Word‑by‑word breakdown currently covers 22 short surahs, marked with a dot in the list at left.</div>';
     }
-    html += '  <div class="surah-actions">';
-    html += '    <button class="listen-surah" data-surah="'+s.no+'" data-action="play-surah">';
-    html += '      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play full surah';
-    html += '    </button>';
-    html += '    <button class="listen-surah recite-btn" data-surah="'+s.no+'" data-action="recite-surah">\ud83c\udfa4 Recite &amp; check</button>';
-    html += '  </div>';
+    html += renderReciteControls(s.no);
     html += '</div>';
 
     if(state.surah !== 1 && state.surah !== 9){
@@ -1105,12 +1142,7 @@ body{padding-bottom:76px;}
     });
     html += '</div>';
     html += '<div style="text-align:center;margin-top:14px;"><button class="mushaf-toggle-trans" id="mushafTransToggle">'+(state.mushafTrans ? 'Hide translations' : 'Show translations for this surah')+'</button></div>';
-    html += '  <div class="surah-actions">';
-    html += '    <button class="listen-surah" data-surah="'+s.no+'" data-action="play-surah">';
-    html += '      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play full surah';
-    html += '    </button>';
-    html += '    <button class="listen-surah recite-btn" data-surah="'+s.no+'" data-action="recite-surah">\ud83c\udfa4 Recite &amp; check</button>';
-    html += '  </div>';
+    html += renderReciteControls(s.no);
     html += '</div>'; // .mushaf-page
 
     html += '<div class="mushaf-nav">';
@@ -1398,6 +1430,22 @@ body{padding-bottom:76px;}
     els.content.querySelectorAll('[data-action="recite-surah"]').forEach(function(btn){
       btn.addEventListener('click', function(){
         toggleRecite(parseInt(btn.getAttribute('data-surah'),10));
+      });
+    });
+    els.content.querySelectorAll('[data-action="recite-strictness"]').forEach(function(input){
+      input.addEventListener('input', function(){
+        var value = parseInt(input.value, 10);
+        if(!Number.isInteger(value) || value < 1 || value > 5) return;
+        reciteStrictness = value;
+        safeSet('maqra_recite_strictness', String(value));
+        var labels = ['Very lenient', 'Lenient', 'Balanced', 'Strict', 'Very strict'];
+        var output = els.content.querySelector('[data-recognition-value]');
+        if(output) output.textContent = labels[value - 1];
+        input.setAttribute('aria-valuetext', labels[value - 1]);
+        if(recite.finalWords.length || recite.interimWords.length){
+          updateReciteView(!recite.running);
+          if(recite.finished) showReciteSummary();
+        }
       });
     });
   }
@@ -1859,6 +1907,8 @@ body{padding-bottom:76px;}
     running: false, stopping: false, finished: true, fatal: false, rec: null, stopTimer: null,
     finalWords: [], interimWords: [], result: null, lastCur: 0
   };
+  var reciteStrictness = parseInt(safeGet('maqra_recite_strictness') || '3', 10);
+  if(!Number.isInteger(reciteStrictness) || reciteStrictness < 1 || reciteStrictness > 5) reciteStrictness = 3;
   var simCache = {};
 
   function byId(id){ return document.getElementById(id); }
@@ -1910,10 +1960,10 @@ body{padding-bottom:76px;}
 
   // Banded word-level alignment (edit distance) of spoken words against expected words.
   // Spoken words may end anywhere in the expected text. Returns a status per expected word.
-  function alignRecite(rec, exp){
+  function alignRecite(rec, exp, finalize){
     var R = rec.length, E = exp.length;
     var LO = 50, HI = 150, W = LO + HI + 1;
-    var INF = 1e9, GAP = 0.6, OK_T = 0.48;
+    var INF = 1e9, GAP = 0.6, OK_T = 0.24 + (reciteStrictness - 1) * 0.12;
     var cost = new Array(R + 1), dir = new Array(R + 1), i, k, j;
     function jOf(ii, kk){ return ii - LO + kk; }
     for(i = 0; i <= R; i++){
@@ -1958,23 +2008,38 @@ body{padding-bottom:76px;}
       else if(dd === 2){ status[j - 1] = 'missed'; k--; }
       else break;
     }
+    if(finalize && R){
+      for(j = end; j < E; j++) if(!status[j]) status[j] = 'missed';
+    }
     // The bismillah before a surah is optional: if it was skipped entirely, don't count it.
     var optIdx = [], allMissed = true;
-    for(j = 0; j < E; j++){ if(exp[j].optional){ optIdx.push(j); if(j >= end || status[j] !== 'missed') allMissed = false; } }
+    for(j = 0; j < E; j++){ if(exp[j].optional){ optIdx.push(j); if(status[j] !== 'missed') allMissed = false; } }
     if(optIdx.length && allMissed) optIdx.forEach(function(q){ status[q] = 'skip'; });
     var ok = 0, wrong = 0, missed = 0;
-    for(j = 0; j < end; j++){
+    for(j = 0; j < E; j++){
       if(status[j] === 'ok') ok++; else if(status[j] === 'wrong') wrong++; else if(status[j] === 'missed') missed++;
     }
     return {status: status, heardAt: heardAt, recAt: recAt, extras: extras, end: end, ok: ok, wrong: wrong, missed: missed};
   }
 
   function setReciteStatus(msg, kind){
-    var button = els.content.querySelector('[data-action="recite-surah"]');
-    if(!button) return;
-    button.title = msg;
-    button.setAttribute('aria-label', 'Recite & check. ' + msg);
-    button.dataset.reciteState = kind || (recite.running ? 'listening' : 'idle');
+    var summary = els.content.querySelector('[data-recognition-summary]');
+    if(!summary) return;
+    summary.textContent = msg;
+    summary.className = 'recite-summary' + (kind === 'error' ? ' error' : kind === 'success' ? ' success' : '');
+  }
+  function showReciteSummary(){
+    var res = recite.result;
+    if(!res) return;
+    var graded = res.ok + res.wrong + res.missed;
+    var percentage = graded ? Math.round(100 * res.ok / graded) : 0;
+    setReciteStatus(
+      'Recitation summary: '+percentage+'% matched ('+res.ok+'/'+graded+' words); '+
+      res.wrong+' different, '+res.missed+' skipped. Grading: '+
+      ['Very lenient', 'Lenient', 'Balanced', 'Strict', 'Very strict'][reciteStrictness - 1]+
+      '. Vowels and tajweed are not scored.',
+      graded && res.ok === graded ? 'success' : ''
+    );
   }
   function setReciteToggle(){
     var b = els.content.querySelector('[data-action="recite-surah"]');
@@ -2012,7 +2077,7 @@ body{padding-bottom:76px;}
     for(var j = 0; j < recite.exp.length; j++){
       var el = recite.spans[j];
       if(!el) continue;
-      var st = j < res.end ? res.status[j] : '';
+      var st = res.status[j] || '';
       if(st === 'wrong' && res.recAt[j] >= finalCount) st = 'pending'; // still being recognised: don't flag yet
       el.classList.toggle('recite-ok', st === 'ok');
       el.classList.toggle('recite-wrong', st === 'wrong');
@@ -2032,7 +2097,7 @@ body{padding-bottom:76px;}
   function updateReciteView(isFinal){
     var rec = recite.finalWords.concat(recite.interimWords);
     var finalCount = isFinal ? rec.length : recite.finalWords.length;
-    var res = alignRecite(rec, recite.exp);
+    var res = alignRecite(rec, recite.exp, isFinal);
     recite.result = res;
     paintRecite(res, finalCount);
   }
@@ -2047,7 +2112,7 @@ body{padding-bottom:76px;}
     updateReciteView(true);
     setReciteToggle();
     if(recite.finalWords.length || recite.interimWords.length){
-      setReciteStatus('Recitation finished. Matched words are green; different or skipped words are marked in red.');
+      showReciteSummary();
     } else {
       setReciteStatus('No speech was recognized. Check microphone permission and try again.', 'error');
     }
