@@ -180,20 +180,15 @@ button{font-family:inherit;}
   border-bottom:1px solid var(--line);
 }
 .beta-label {
-  /* Remove absolute position limits */
-  position: static; 
-  
-  /* Styling modifications to center nicely in the top bar */
+  position: absolute;
+  top: 10px; /* Adjust this number to push it further down or up */
+  right: 8px;
   color: var(--ink-soft);
   font-size: 16px;
   line-height: 1;
   opacity: .45;
   pointer-events: none;
-  
-  /* Push to the center between the left buttons and right side controls */
-  margin: 0 auto; 
 }
-
 .icon-btn{
   background:transparent;
   border:1px solid var(--line);
