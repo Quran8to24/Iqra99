@@ -171,6 +171,7 @@ button{font-family:inherit;}
   flex-direction:column;
 }
 .topbar{
+  order:-2;
   position:sticky; top:0; z-index:10;
   display:flex; align-items:center; gap:10px;
   padding:12px 22px;
@@ -265,12 +266,11 @@ button{font-family:inherit;}
 
 .content{
   flex:1;
-  max-width:840px;
+  max-width:1120px;
   width:100%;
   margin:0 auto;
   padding:28px 24px 100px;
 }
-
 .surah-header{
   text-align:center;
   padding-bottom:22px;
@@ -603,57 +603,17 @@ body{padding-bottom:76px;}
 .listen-surah.recite-btn{border-color:var(--emerald); color:var(--emerald);}
 .listen-surah.recite-btn:hover{background:color-mix(in srgb, var(--emerald) 12%, transparent);}
 
-.recite-overlay{z-index:40; align-items:flex-start; padding:18px 14px 92px;}
-.recite-modal{max-width:820px; max-height:100%; display:flex; flex-direction:column;}
-.recite-modal .modal-body{overflow-y:auto; flex:1 1 auto;}
-.recite-note{font-size:12px; line-height:1.55; color:var(--ink-soft); margin:0 0 12px;}
-.recite-controls{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:8px;}
-.recite-controls label{font-size:12.5px; color:var(--ink-soft); display:flex; align-items:center; gap:6px;}
-.recite-controls input{
-  width:62px; background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius);
-  color:var(--ink); padding:6px 8px; font-family:inherit; font-size:13px; text-align:center;
+.recite-btn.is-listening{
+  background:color-mix(in srgb, var(--danger) 12%, transparent);
+  border-color:var(--danger);
+  color:var(--danger);
 }
-.recite-counts{font-size:12.5px; color:var(--ink-soft); margin-left:auto;}
-.recite-status{font-size:13px; min-height:20px; margin:4px 0 8px; color:var(--ink-soft);}
-.recite-status.error{color:var(--danger);}
-.recite-status.live{color:var(--emerald);}
-.recite-legend{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:8px;}
-.recite-legend span{font-family:'Source Serif 4', serif; font-size:11.5px; direction:ltr; padding:1px 8px;}
-.recite-text{
-  direction:rtl; text-align:justify; text-align-last:right;
-  font-family:'Amiri', serif; font-size:var(--ar-size); line-height:2.35;
-  padding:14px 6px; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
-}
-.recite-bism{text-align:center; margin-bottom:6px;}
-.rw{padding:0 3px; border-radius:4px; transition:background .15s ease, color .15s ease;}
-.rw.ok{color:var(--emerald);}
-.rw.wrong{color:var(--danger); background:color-mix(in srgb, var(--danger) 14%, transparent); text-decoration:underline wavy var(--danger);}
-.rw.missed{color:var(--danger); border-bottom:2px dashed var(--danger);}
-.rw.skip{opacity:.5;}
-.rw.cur{background:color-mix(in srgb, var(--gold-soft) 38%, transparent); box-shadow:0 0 0 2px color-mix(in srgb, var(--gold-soft) 55%, transparent);}
-.recite-end{
-  display:inline-flex; align-items:center; justify-content:center;
-  width:26px; height:26px; margin:0 2px;
-  border:1px solid var(--gold-soft); border-radius:50%;
-  font-size:10.5px; color:var(--gold); font-family:'Source Serif 4', serif; direction:ltr;
-}
-.recite-heard{font-size:12.5px; color:var(--ink-soft); margin-top:8px; min-height:22px;}
-.recite-heard span{font-family:'Amiri', serif; font-size:17px;}
-.recite-results{margin-top:16px;}
-.rr-score{font-size:22px; font-weight:600; color:var(--gold);}
-.rr-sub{font-size:12.5px; color:var(--ink-soft); margin:2px 0 8px;}
-.rr-ayah{border:1px solid var(--line); border-radius:6px; padding:10px 12px; margin-bottom:8px; font-size:13px;}
-.rr-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:4px;}
-.rr-hear{padding:5px 12px; font-size:12px;}
-.rr-line{margin:3px 0; color:var(--ink-soft);}
-.rr-words{font-family:'Amiri', serif; font-size:20px; direction:rtl; color:var(--ink); unicode-bidi:isolate;}
-.recite-again{margin-top:10px;}
-
-.recite-mic{margin:0 0 12px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12.5px;}
-.mic-line{line-height:1.55; flex:1 1 260px;}
-.mic-line.ok{color:var(--emerald); font-weight:600;}
-.mic-line.bad{color:var(--danger);}
-.mic-hint{color:var(--ink-soft);}
+.recite-word{border-radius:3px; transition:background .12s ease, color .12s ease, box-shadow .12s ease;}
+.recite-word.recite-ok{color:var(--emerald);}
+.recite-word.recite-wrong{color:var(--danger); background:color-mix(in srgb, var(--danger) 15%, transparent); text-decoration:underline wavy var(--danger);}
+.recite-word.recite-missed{color:var(--danger); border-bottom:2px dashed var(--danger);}
+.recite-word.recite-skip{opacity:.6;}
+.recite-word.recite-cur{background:color-mix(in srgb, var(--gold-soft) 38%, transparent); box-shadow:0 0 0 2px color-mix(in srgb, var(--gold-soft) 55%, transparent);}
 
 /* ---------- Account modal ---------- */
 .modal-overlay{
@@ -704,8 +664,10 @@ body{padding-bottom:76px;}
   width:44px; height:44px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   font-size:22px; background:var(--paper-raised); border:1px solid var(--gold-soft);
-  flex:0 0 auto;
+  flex:0 0 auto; overflow:hidden;
 }
+.acct-avatar img,.account-icon img{width:100%; height:100%; border-radius:50%; object-fit:cover;}
+.account-icon{display:inline-flex; width:20px; height:20px; align-items:center; justify-content:center; overflow:hidden;}
 .avatar-choice{
   background:var(--paper-raised); border:1px solid var(--line); border-radius:8px;
   font-size:20px; padding:8px 0; cursor:pointer;
@@ -758,6 +720,7 @@ body{padding-bottom:76px;}
 
 /* ---------- Memorization mode ---------- */
 .memo-bar{
+  order:-1;
   display:flex; align-items:center; gap:10px; flex-wrap:wrap;
   padding:12px 20px; border-bottom:1px solid var(--line);
   background:color-mix(in srgb, var(--emerald) 8%, var(--paper));
@@ -844,7 +807,9 @@ body{padding-bottom:76px;}
       </button>
     </div>
 
-    <div class="memo-bar hidden" id="memoBar"><span class="memo-label">🧠 Memorization mode</span><span class="memo-hint">Words are hidden — recite and they reveal as you go</span><div class="memo-controls"><span class="memo-status" id="memoStatus">Press Start</span><button class="btn-primary" id="memoToggle" style="border-radius:20px;padding:8px 16px;font-size:13px;">🎤 Start</button><button class="btn-secondary" id="memoStop" style="border-radius:20px;padding:8px 16px;font-size:13px;display:none;">⏹ Stop</button><button class="icon-btn" id="memoClose" title="Exit memorization mode" style="border-radius:50%;">✕</button></div></div><div class="content" id="content"></div>
+    <div class="content" id="content"></div>
+
+    <div class="memo-bar hidden" id="memoBar"><span class="memo-label">🧠 Memorization mode</span><span class="memo-hint">Words are hidden — recite and they reveal as you go</span><div class="memo-controls"><span class="memo-status" id="memoStatus">Press Start</span><button class="btn-primary" id="memoToggle" style="border-radius:20px;padding:8px 16px;font-size:13px;">🎤 Start</button><button class="btn-secondary" id="memoStop" style="border-radius:20px;padding:8px 16px;font-size:13px;display:none;">⏹ Stop</button><button class="icon-btn" id="memoClose" title="Exit memorization mode" style="border-radius:50%;">✕</button></div></div>
   </main>
 </div>
 
@@ -858,15 +823,7 @@ body{padding-bottom:76px;}
   </div>
 </div>
 
-<div class="modal-overlay recite-overlay" id="reciteOverlay">
-  <div class="modal recite-modal" role="dialog" aria-label="Recitation practice">
-    <div class="modal-head">
-      <span id="reciteTitle">Recite</span>
-      <button class="icon-btn" id="reciteClose" aria-label="Close">✕</button>
-    </div>
-    <div class="modal-body" id="reciteBody"></div>
-  </div>
-</div>
+
 
 <div class="player-bar" id="playerBar">
   <div class="player-row">
@@ -1001,7 +958,18 @@ body{padding-bottom:76px;}
     });
   }
 
+  var reciteMarkupIndex = 0;
+  function renderReciteWords(text, ayahNo, optional, extraClass){
+    return String(text).split(/\s+/).filter(Boolean).map(function(word){
+      var norm = normAr(word);
+      if(!norm) return escapeHtml(word);
+      var index = reciteMarkupIndex++;
+      return '<span class="recite-word'+(extraClass ? ' '+extraClass : '')+'" data-rec-index="'+index+'" data-rec-ayah="'+ayahNo+'"'+(optional ? ' data-rec-optional="true"' : '')+'>'+escapeHtml(word)+'</span>';
+    }).join(' ');
+  }
+
   function renderSurah(){
+    reciteMarkupIndex = 0;
     var s = DATA.surahs[state.surah - 1];
     var ayat = DATA.ayat[state.surah];
     var hasWbw = wbwSet.has(state.surah);
@@ -1030,7 +998,7 @@ body{padding-bottom:76px;}
     html += '</div>';
 
     if(state.surah !== 1 && state.surah !== 9){
-      html += '<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
+      html += '<div class="bismillah">'+renderReciteWords(DATA.ayat[1][0].ar, 0, true)+'</div>';
     }
 
     ayat.forEach(function(ayah){
@@ -1040,7 +1008,7 @@ body{padding-bottom:76px;}
         ayah.w.forEach(function(w, i){
           var ar = w[0], gloss = w[1], translit = w[2];
           html += '<span class="word" tabindex="0" data-ar="'+escapeHtml(ar)+'" data-gloss="'+escapeHtml(gloss)+'" data-translit="'+escapeHtml(translit)+'">';
-          html += '  <span class="ar">'+ar+'</span>';
+          html += '  '+renderReciteWords(ar, ayah.a, false, 'ar');
           html += '  <span class="translit">'+escapeHtml(translit)+'</span>';
           html += '  <span class="gloss">'+escapeHtml(gloss)+'</span>';
           html += '  <span class="word-popover"><span class="pop-gloss">'+escapeHtml(gloss)+'</span><br><span class="pop-translit">'+escapeHtml(translit)+'</span></span>';
@@ -1049,7 +1017,7 @@ body{padding-bottom:76px;}
         html += '  <span class="ayah-tail">'+ayah.a+'</span>';
         html += '</div>';
       } else {
-        html += '<div class="plain-ar">'+ayah.ar+' <span class="ayah-tail">'+ayah.a+'</span></div>';
+        html += '<div class="plain-ar">'+renderReciteWords(ayah.ar, ayah.a)+' <span class="ayah-tail">'+ayah.a+'</span></div>';
       }
       html += '  <div class="ayah-bottom-row">';
       html += '    <div class="ayah-translation">'+escapeHtml(ayah.en)+'</div>';
@@ -1093,6 +1061,7 @@ body{padding-bottom:76px;}
   }
 
   function renderMushaf(){
+    reciteMarkupIndex = 0;
     var s = DATA.surahs[state.surah - 1];
     var ayat = DATA.ayat[state.surah];
     var startPage = ayat[0].p, endPage = ayat[ayat.length - 1].p;
@@ -1102,7 +1071,7 @@ body{padding-bottom:76px;}
     html += '<div class="mushaf-page-head"><span>Surah '+s.no+' of 114</span><span>'+pageLabel+'</span></div>';
     html += '<div class="mushaf-surah-title">'+s.name_ar+'</div>';
     if(s.no !== 1 && s.no !== 9){
-      html += '<div class="mushaf-bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
+      html += '<div class="mushaf-bismillah">'+renderReciteWords(DATA.ayat[1][0].ar, 0, true)+'</div>';
     }
 
     html += '<div class="mushaf-arabic">';
@@ -1113,7 +1082,7 @@ body{padding-bottom:76px;}
         html += '<span class="juz-tag">Juz '+ayah.j+'</span>';
         lastJuz = ayah.j;
       }
-      html += '<span class="mushaf-verse" data-surah="'+s.no+'" data-ayah="'+ayah.a+'">'+ayah.ar+' <span class="mushaf-ayah-end">'+ayah.a+'</span></span> ';
+      html += '<span class="mushaf-verse" data-surah="'+s.no+'" data-ayah="'+ayah.a+'">'+renderReciteWords(ayah.ar, ayah.a)+' <span class="mushaf-ayah-end">'+ayah.a+'</span></span> ';
       transRows.push({surah:s.no, ayah:ayah.a, name:s.name_roman, en:ayah.en});
     });
     html += '</div>';
@@ -1165,6 +1134,7 @@ body{padding-bottom:76px;}
       state.mushafTrans = !state.mushafTrans;
       safeSet('maqra_mushaftrans', state.mushafTrans ? '1' : '0');
       renderMushaf();
+      openRecite(state.surah);
     });
 
     wireListenButtons();
@@ -1181,6 +1151,7 @@ body{padding-bottom:76px;}
     syncViewButtons();
     if(state.viewMode === 'mushaf') renderMushaf();
     else renderSurah();
+    openRecite(state.surah);
     if(typeof player !== 'undefined' && player.mode === 'ayah' && player.surah === state.surah && player.ayah){
       setHighlight(player.surah, player.ayah, false);
     }
@@ -1415,7 +1386,7 @@ body{padding-bottom:76px;}
     });
     els.content.querySelectorAll('[data-action="recite-surah"]').forEach(function(btn){
       btn.addEventListener('click', function(){
-        openRecite(parseInt(btn.getAttribute('data-surah'),10));
+        toggleRecite(parseInt(btn.getAttribute('data-surah'),10));
       });
     });
   }
@@ -1526,7 +1497,7 @@ body{padding-bottom:76px;}
       player.reciterId = remote.reciterId;
       els.playerReciter.value = String(remote.reciterId);
     }
-    if(remote.avatar && AVATARS.indexOf(remote.avatar) !== -1){
+    if(remote.avatar && (AVATARS.indexOf(remote.avatar) !== -1 || isCustomAvatar(remote.avatar))){
       profileAvatar = remote.avatar;
       safeSet('maqra_avatar', remote.avatar);
     }
@@ -1595,9 +1566,10 @@ body{padding-bottom:76px;}
       label.textContent = sbSession.user.email.split('@')[0];
       els.accountBtn.classList.add('signed-in');
       var icon = els.accountBtn.querySelector('.account-icon');
-      if(icon) icon.textContent = profileAvatar || '';
-      if(icon && !profileAvatar){
-        icon.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.5c-3.3 0-9.8 1.6-9.8 4.9v2.4h19.6v-2.4c0-3.3-6.5-4.9-9.8-4.9z"/></svg>';
+      if(icon){
+        icon.innerHTML = profileAvatar
+          ? avatarMarkup(profileAvatar)
+          : '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.5c-3.3 0-9.8 1.6-9.8 4.9v2.4h19.6v-2.4c0-3.3-6.5-4.9-9.8-4.9z"/></svg>';
       }
     } else {
       label.textContent = 'Sign in';
@@ -1614,6 +1586,16 @@ body{padding-bottom:76px;}
     });
     html += '</div>';
     return html;
+  }
+
+  function isCustomAvatar(value){
+    return typeof value === 'string' && value.length <= 100000 &&
+      /^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(value);
+  }
+
+  function avatarMarkup(value){
+    if(isCustomAvatar(value)) return '<img alt="" src="' + value + '">';
+    return escapeHtml(value || '👤');
   }
 
   function renderAccountModal(){
@@ -1643,11 +1625,13 @@ body{padding-bottom:76px;}
       html += '</div>';
     } else {
       html += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">';
-      html += '  <div class="acct-avatar">'+(profileAvatar || '👤')+'</div>';
+      html += '  <div class="acct-avatar">'+avatarMarkup(profileAvatar)+'</div>';
       html += '  <div class="acct-user" style="margin-bottom:0;">Signed in as <b>'+escapeHtml(sbSession.user.email)+'</b></div>';
       html += '</div>';
-      html += '<button class="toggle-link" id="avatarToggle">'+(profileAvatar ? 'Change profile picture' : 'Choose a profile picture')+'</button>';
-      html += avatarPickerHtml(!profileAvatar);
+      html += '<button class="btn-secondary" id="customAvatarBtn" type="button">Custom profile picture</button>';
+      html += '<input id="avatarFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden>';
+      html += '<button class="toggle-link" id="avatarToggle">'+(profileAvatar ? 'Change profile picture' : 'Choose an emoji picture')+'</button>';
+      html += avatarPickerHtml(!profileAvatar || isCustomAvatar(profileAvatar));
       html += '<div class="btn-row">';
       html += '  <button class="btn-primary" id="syncNowBtn">Sync now</button>';
       html += '  <button class="btn-secondary" id="logoutBtn">Log out</button>';
@@ -1675,6 +1659,57 @@ body{padding-bottom:76px;}
         schedulePush();
         renderAccountModal();
       });
+    });
+
+    var customAvatarBtn = document.getElementById('customAvatarBtn');
+    var avatarFile = document.getElementById('avatarFile');
+    if(customAvatarBtn && avatarFile) customAvatarBtn.addEventListener('click', function(){
+      avatarFile.click();
+    });
+    if(avatarFile) avatarFile.addEventListener('change', function(){
+      var file = avatarFile.files && avatarFile.files[0];
+      if(!file) return;
+      var msgArea = document.getElementById('acctMsgArea');
+      function showUploadError(message){
+        if(msgArea) msgArea.innerHTML = acctMsg(escapeHtml(message), 'error');
+      }
+      if(!/^image\/(jpeg|png|webp|gif)$/.test(file.type) || file.size > 10 * 1024 * 1024){
+        showUploadError('Choose a JPG, PNG, WebP, or GIF image under 10 MB.');
+        avatarFile.value = '';
+        return;
+      }
+      var reader = new FileReader();
+      reader.onerror = function(){
+        showUploadError('The image could not be read. Please try another file.');
+      };
+      reader.onload = function(){
+        var image = new Image();
+        image.onerror = function(){
+          showUploadError('That image could not be opened. Please try another file.');
+        };
+        image.onload = function(){
+          var canvas = document.createElement('canvas');
+          var scale = Math.min(1, 256 / Math.max(image.width, image.height));
+          canvas.width = Math.max(1, Math.round(image.width * scale));
+          canvas.height = Math.max(1, Math.round(image.height * scale));
+          var context = canvas.getContext('2d');
+          if(!context){
+            showUploadError('Your browser could not process that image.');
+            return;
+          }
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+          try{
+            profileAvatar = canvas.toDataURL('image/jpeg', 0.82);
+            safeSet('maqra_avatar', profileAvatar);
+            schedulePush();
+            renderAccountModal();
+          } catch(err){
+            showUploadError('The image could not be saved. Please try a smaller image.');
+          }
+        };
+        image.src = reader.result;
+      };
+      reader.readAsDataURL(file);
     });
 
     var githubBtn = document.getElementById('githubBtn');
@@ -1810,7 +1845,7 @@ body{padding-bottom:76px;}
   var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
   var recite = {
     surah: null, startAyah: 1, exp: [], spans: [],
-    running: false, finished: true, fatal: false, rec: null, stopTimer: null,
+    running: false, stopping: false, finished: true, fatal: false, rec: null, stopTimer: null,
     finalWords: [], interimWords: [], result: null, lastCur: 0
   };
   var simCache = {};
@@ -1924,49 +1959,41 @@ body{padding-bottom:76px;}
   }
 
   function setReciteStatus(msg, kind){
-    var el = byId('reciteStatus');
-    if(!el) return;
-    el.textContent = msg;
-    el.className = 'recite-status' + (kind ? ' ' + kind : '');
+    var button = els.content.querySelector('[data-action="recite-surah"]');
+    if(!button) return;
+    button.title = msg;
+    button.setAttribute('aria-label', 'Recite & check. ' + msg);
+    button.dataset.reciteState = kind || (recite.running ? 'listening' : 'idle');
   }
   function setReciteToggle(){
-    var b = byId('reciteToggle');
+    var b = els.content.querySelector('[data-action="recite-surah"]');
     if(!b) return;
-    if(recite.running) b.textContent = '⏹ Stop & see results';
-    else b.textContent = recite.result ? '🎤 Recite again' : '🎤 Start reciting';
+    b.textContent = recite.stopping ? 'Finishing…' : recite.running ? '⏹ Stop reciting' : '🎤 Recite & check';
+    b.disabled = recite.stopping;
+    b.classList.toggle('is-listening', recite.running);
+    b.setAttribute('aria-pressed', String(recite.running));
+    if(!recite.running && !recite.stopping) b.setAttribute('aria-label', 'Recite & check');
   }
 
   function buildReciteText(){
-    var ayat = DATA.ayat[recite.surah];
-    var exp = [], html = '';
-    function pushTokens(text, ayahNo, optional){
-      text.split(/\s+/).filter(Boolean).forEach(function(tok){
-        var n = normAr(tok), attr = '';
-        if(n){ attr = ' data-i="' + exp.length + '"'; exp.push({norm: n, raw: tok, ayah: ayahNo, optional: !!optional}); }
-        html += '<span class="rw"' + attr + '>' + tok + '</span> ';
-      });
-    }
-    if(recite.startAyah === 1 && recite.surah !== 1 && recite.surah !== 9){
-      html += '<div class="recite-bism">';
-      pushTokens(DATA.ayat[1][0].ar, 0, true);
-      html += '</div>';
-    }
-    ayat.forEach(function(a){
-      if(a.a < recite.startAyah) return;
-      pushTokens(a.ar, a.a, false);
-      html += '<span class="recite-end">' + a.a + '</span> ';
+    var exp = [], spans = [];
+    els.content.querySelectorAll('.recite-word[data-rec-index]').forEach(function(el){
+      var index = parseInt(el.getAttribute('data-rec-index'), 10);
+      var raw = el.textContent;
+      var norm = normAr(raw);
+      if(!norm || isNaN(index)) return;
+      exp[index] = {
+        norm: norm,
+        raw: raw,
+        ayah: parseInt(el.getAttribute('data-rec-ayah'), 10) || 0,
+        optional: el.getAttribute('data-rec-optional') === 'true'
+      };
+      spans[index] = el;
     });
-    recite.exp = exp;
-    var box = byId('reciteText');
-    box.innerHTML = html;
-    recite.spans = [];
-    box.querySelectorAll('.rw[data-i]').forEach(function(el){
-      recite.spans[parseInt(el.getAttribute('data-i'), 10)] = el;
-    });
+    recite.exp = exp.filter(Boolean);
+    recite.spans = spans;
     recite.lastCur = 0;
-    if(recite.spans[0]) recite.spans[0].className = 'rw cur';
-    byId('reciteHeard').innerHTML = '';
-    byId('reciteCounts').textContent = '';
+    if(recite.running || recite.result) updateReciteView(!recite.running);
   }
 
   function paintRecite(res, finalCount){
@@ -1976,8 +2003,11 @@ body{padding-bottom:76px;}
       if(!el) continue;
       var st = j < res.end ? res.status[j] : '';
       if(st === 'wrong' && res.recAt[j] >= finalCount) st = 'pending'; // still being recognised: don't flag yet
-      var cls = 'rw' + (st && st !== 'pending' ? ' ' + st : '') + (j === cur ? ' cur' : '');
-      if(el.className !== cls) el.className = cls;
+      el.classList.toggle('recite-ok', st === 'ok');
+      el.classList.toggle('recite-wrong', st === 'wrong');
+      el.classList.toggle('recite-missed', st === 'missed');
+      el.classList.toggle('recite-skip', st === 'skip');
+      el.classList.toggle('recite-cur', j === cur);
       if(st === 'wrong') el.title = 'Heard: ' + res.heardAt[j];
       else if(el.hasAttribute('title')) el.removeAttribute('title');
     }
@@ -1994,62 +2024,6 @@ body{padding-bottom:76px;}
     var res = alignRecite(rec, recite.exp);
     recite.result = res;
     paintRecite(res, finalCount);
-    byId('reciteHeard').innerHTML = rec.length ? 'Heard: <span dir="rtl">' + escapeHtml(rec.slice(-8).join(' ')) + '</span>' : '';
-    byId('reciteCounts').textContent = '✓ ' + res.ok + '   ✗ ' + (res.wrong + res.missed);
-  }
-
-  function renderReciteResults(res){
-    var box = byId('reciteResults');
-    var heardAny = recite.finalWords.length + recite.interimWords.length;
-    if(!heardAny){
-      box.innerHTML = '<div class="acct-msg error">No recitation was picked up. Check that the microphone is allowed for this site, speak close to it, and try again.</div>';
-      return;
-    }
-    var covered = res.ok + res.wrong + res.missed;
-    if(!covered){
-      box.innerHTML = '<div class="acct-msg error">I heard speech but couldn\u2019t match it to this surah. Make sure you started at the ayah chosen above.</div>';
-      return;
-    }
-    var pct = Math.round(100 * res.ok / covered);
-    var byAyah = {}, order = [];
-    for(var j = 0; j < res.end; j++){
-      var st = res.status[j];
-      if(st !== 'wrong' && st !== 'missed') continue;
-      var a = recite.exp[j].ayah;
-      if(!byAyah[a]){ byAyah[a] = {missed: [], wrong: []}; order.push(a); }
-      if(st === 'missed') byAyah[a].missed.push(recite.exp[j].raw);
-      else byAyah[a].wrong.push({raw: recite.exp[j].raw, heard: res.heardAt[j]});
-    }
-    var lastAyah = recite.exp[res.end - 1].ayah;
-    var html = '<div class="rr-score">' + pct + '% of words matched</div>';
-    html += '<div class="rr-sub">' + res.ok + ' of ' + covered + ' words matched \u00b7 ' +
-      (res.end < recite.exp.length ? 'you got as far as ' + (lastAyah ? 'ayah ' + lastAyah : 'the bismillah') : 'you reached the end') + '</div>';
-    if(res.extras.length >= 3){
-      html += '<div class="rr-sub">' + res.extras.length + ' extra words were heard that aren\u2019t in the text (or the browser misheard).</div>';
-    }
-    if(!order.length){
-      html += '<div class="acct-msg ok">Every word you recited matched the text. Vowels and tajweed can\u2019t be checked here \u2014 compare with the reciter using the \u25b6 buttons in the player.</div>';
-    } else {
-      html += '<p class="recite-note">Red words may be real slips or just the browser mishearing \u2014 treat them as hints, and use \u201cHear ayah\u201d to check against the reciter.</p>';
-    }
-    order.forEach(function(a){
-      var g = byAyah[a];
-      html += '<div class="rr-ayah"><div class="rr-head"><b>' + (a ? 'Ayah ' + a : 'Bismillah') + '</b>';
-      if(a) html += '<button class="btn-secondary rr-hear" data-ayah="' + a + '">\u25b6 Hear ayah</button>';
-      html += '</div>';
-      if(g.missed.length) html += '<div class="rr-line">Skipped: <span class="rr-words">' + g.missed.join(' ') + '</span></div>';
-      g.wrong.forEach(function(w){
-        html += '<div class="rr-line">Expected <span class="rr-words">' + w.raw + '</span> \u2014 heard <span class="rr-words">' + escapeHtml(w.heard) + '</span></div>';
-      });
-      html += '</div>';
-    });
-    box.innerHTML = html;
-    box.querySelectorAll('.rr-hear').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        playAyah(recite.surah, parseInt(btn.getAttribute('data-ayah'), 10), true);
-      });
-    });
-    if(box.scrollIntoView) box.scrollIntoView({behavior: 'smooth', block: 'start'});
   }
 
   function finishRecite(){
@@ -2057,15 +2031,20 @@ body{padding-bottom:76px;}
     recite.finished = true;
     clearTimeout(recite.stopTimer);
     recite.running = false;
+    recite.stopping = false;
     if(recite.fatal){ setReciteToggle(); return; }
     updateReciteView(true);
     setReciteToggle();
-    setReciteStatus('Done. Here\u2019s how it went:');
-    renderReciteResults(recite.result);
+    if(recite.finalWords.length || recite.interimWords.length){
+      setReciteStatus('Recitation finished. Matched words are green; different or skipped words are marked in red.');
+    } else {
+      setReciteStatus('No speech was recognized. Check microphone permission and try again.', 'error');
+    }
   }
 
   function stopRecite(){
     recite.running = false;
+    recite.stopping = true;
     setReciteToggle();
     setReciteStatus('Finishing up\u2026');
     try{ recite.rec.stop(); }catch(e){}
@@ -2080,9 +2059,13 @@ body{padding-bottom:76px;}
     }
     try{ els.playerAudio.pause(); }catch(e){}
     clearHighlight();
-    byId('reciteResults').innerHTML = '';
     recite.finalWords = []; recite.interimWords = []; recite.result = null;
-    recite.fatal = false; recite.finished = false;
+    recite.fatal = false; recite.finished = false; recite.stopping = false;
+    recite.spans.forEach(function(el){
+      if(!el) return;
+      el.classList.remove('recite-ok','recite-wrong','recite-missed','recite-skip','recite-cur');
+      el.removeAttribute('title');
+    });
     simCache = {};
     buildReciteText();
 
@@ -2112,11 +2095,12 @@ body{padding-bottom:76px;}
       var msg = 'Speech recognition error (' + e + ').';
       if(e === 'not-allowed' || e === 'service-not-allowed') msg = 'Microphone access is blocked. Allow the microphone for this site in your browser\u2019s address-bar settings, then try again.';
       else if(e === 'audio-capture') msg = 'No microphone was found.';
-      if(e === 'not-allowed' || e === 'service-not-allowed'){ micState = 'denied'; renderMicRow(); }
-      else if(e === 'network') msg = 'Speech recognition needs an internet connection (the browser\u2019s speech service processes your audio).';
+      if(e === 'network') msg = 'Speech recognition needs an internet connection (the browser\u2019s speech service processes your audio).';
       recite.fatal = true;
       recite.running = false;
+      recite.stopping = false;
       setReciteStatus(msg, 'error');
+      setReciteToggle();
     };
     rec.onend = function(){
       if(recite.running && !recite.fatal){
@@ -2139,140 +2123,49 @@ body{padding-bottom:76px;}
     }
   }
 
-  // ---- Microphone permission: ask the browser, then the user approves in its pop-up ----
-  var micState = 'unknown'; // 'granted' | 'prompt' | 'denied' | 'unknown'
-  function micSupported(){
-    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-  }
-  function queryMic(){
-    if(!navigator.permissions || !navigator.permissions.query) return Promise.resolve('unknown');
-    return navigator.permissions.query({name: 'microphone'}).then(function(p){
-      p.onchange = function(){ micState = p.state; renderMicRow(); };
-      return p.state;
-    }).catch(function(){ return 'unknown'; });
-  }
-  function renderMicRow(){
-    var box = byId('reciteMic');
-    if(!box || !SpeechRec) return;
-    var html;
-    if(window.isSecureContext === false){
-      html = '<div class="mic-line bad">The microphone only works on secure pages. Open this site from its https:// address.</div>';
-    } else if(micState === 'granted'){
-      html = '<div class="mic-line ok">\u2713 Microphone allowed</div>';
-    } else if(micState === 'denied'){
-      html = '<div class="mic-line bad"><b>The microphone is blocked for this site.</b> Click the icon at the left of the address bar (\ud83d\udd12 or sliders), open <i>Site settings</i> \u2192 <i>Microphone</i> \u2192 <i>Allow</i>. This panel updates by itself once you do. If this is a school or work device, an administrator may have blocked the microphone.</div>' +
-             '<button class="btn-secondary" id="micAllowBtn">Check again</button>';
-    } else {
-      html = '<button class="btn-primary" id="micAllowBtn">\ud83c\udfa4 Allow microphone</button>' +
-             '<span class="mic-hint">Your browser will show a pop-up \u2014 choose <b>Allow</b>.</span>';
-    }
-    box.innerHTML = html;
-    var b = byId('micAllowBtn');
-    if(b) b.addEventListener('click', requestMic);
-  }
-  function requestMic(){
-    if(window.isSecureContext === false){ renderMicRow(); return Promise.resolve({ok: false}); }
-    if(!micSupported()){ return Promise.resolve({ok: true, unsupported: true}); } // speech engine asks on its own
-    setReciteStatus('Your browser is asking to use the microphone \u2014 choose Allow in its pop-up\u2026', 'live');
-    return navigator.mediaDevices.getUserMedia({audio: true}).then(function(stream){
-      stream.getTracks().forEach(function(t){ t.stop(); }); // permission is all we need here
-      micState = 'granted';
-      renderMicRow();
-      setReciteStatus('Microphone allowed. Press Start reciting when you\u2019re ready.');
-      return {ok: true};
-    }).catch(function(err){
-      var name = err && err.name;
-      if(name === 'NotFoundError' || name === 'DevicesNotFoundError'){
-        setReciteStatus('No microphone was found on this device.', 'error');
-        return {ok: false};
-      }
-      if(name === 'NotAllowedError' || name === 'PermissionDeniedError' || name === 'SecurityError'){
-        // Closing the pop-up without choosing leaves the state at "prompt"; a real block says "denied".
-        return queryMic().then(function(s){
-          micState = (s === 'unknown') ? 'denied' : s;
-          renderMicRow();
-          if(micState === 'prompt') setReciteStatus('No problem \u2014 press Allow microphone again whenever you\u2019re ready.');
-          else setReciteStatus('Microphone access wasn\u2019t allowed.', 'error');
-          return {ok: false};
-        });
-      }
-      setReciteStatus('Couldn\u2019t open the microphone (' + (name || 'unknown error') + ').', 'error');
-      return {ok: false};
-    });
-  }
   function startRecite(){
     if(!SpeechRec){
       setReciteStatus('Speech recognition isn\u2019t available in this browser. Try Chrome or Edge (desktop or Android).', 'error');
       return;
     }
-    if(micState !== 'granted' && (micSupported() || window.isSecureContext === false)){
-      // Ask the browser first. After approving, the user presses Start again (a fresh tap keeps every browser happy).
-      requestMic();
+    if(window.isSecureContext === false){
+      setReciteStatus('Microphone recognition requires a secure HTTPS page.', 'error');
       return;
     }
     beginRecite();
   }
 
   function openRecite(surah){
-    var s = DATA.surahs[surah - 1];
-    recite.surah = surah; recite.startAyah = 1;
-    recite.running = false; recite.finished = true; recite.fatal = false; recite.result = null;
-    byId('reciteTitle').textContent = 'Recite \u2014 ' + s.name_roman;
-    var html = '';
-    html += '<p class="recite-note">Recite and this page follows along, comparing the <b>words and their order</b> with the text. Your browser\u2019s speech service (Google\u2019s, in Chrome) transcribes your voice; this site never records or stores audio. It <b>can\u2019t judge tashkeel (vowels) or tajweed rules</b> \u2014 use \u201cHear ayah\u201d afterwards to compare with the reciter.</p>';
-    html += '<div class="recite-mic" id="reciteMic"></div>';
-    html += '<div class="recite-controls">';
-    html += '  <label>Start at ayah <input type="number" id="reciteStart" min="1" max="' + s.total_ayah + '" value="1"></label>';
-    html += '  <button class="btn-primary" id="reciteToggle">\ud83c\udfa4 Start reciting</button>';
-    html += '  <span class="recite-counts" id="reciteCounts"></span>';
-    html += '</div>';
-    html += '<div class="recite-status" id="reciteStatus"></div>';
-    html += '<div class="recite-legend"><span class="rw ok">matched</span><span class="rw wrong">different</span><span class="rw missed">skipped</span><span class="rw cur">next word</span></div>';
-    html += '<div class="recite-text" id="reciteText"></div>';
-    html += '<div class="recite-heard" id="reciteHeard"></div>';
-    html += '<div class="recite-results" id="reciteResults"></div>';
-    byId('reciteBody').innerHTML = html;
-    byId('reciteToggle').addEventListener('click', function(){
-      if(recite.running) stopRecite(); else startRecite();
-    });
-    byId('reciteStart').addEventListener('change', function(){
-      if(recite.running){ this.value = recite.startAyah; return; }
-      var v = parseInt(this.value, 10);
-      if(isNaN(v) || v < 1) v = 1;
-      if(v > s.total_ayah) v = s.total_ayah;
-      this.value = v;
-      recite.startAyah = v;
+    var changed = recite.surah !== surah;
+    if(changed){
+      clearTimeout(recite.stopTimer);
+      if(recite.running){
+        recite.running = false;
+        recite.finished = true;
+        try{ recite.rec.abort(); }catch(e){}
+      }
+      recite.stopping = false;
+      recite.finalWords = [];
+      recite.interimWords = [];
       recite.result = null;
-      byId('reciteResults').innerHTML = '';
-      buildReciteText();
-      setReciteToggle();
-    });
-    buildReciteText();
-    if(!SpeechRec){
-      setReciteStatus('Speech recognition isn\u2019t available in this browser. Try Chrome or Edge (desktop or Android).', 'error');
-      byId('reciteToggle').disabled = true;
-    } else {
-      setReciteStatus('Press Start, allow the microphone, then recite.');
+      recite.fatal = false;
     }
-    byId('reciteOverlay').classList.add('show');
-    micState = 'unknown';
-    renderMicRow();
-    queryMic().then(function(s){ micState = s; renderMicRow(); });
+    recite.surah = surah;
+    recite.startAyah = 1;
+    buildReciteText();
+    setReciteToggle();
+    if(!SpeechRec) setReciteStatus('Speech recognition is not available in this browser.', 'error');
   }
 
-  function closeRecite(){
+  function toggleRecite(surah){
+    if(recite.stopping) return;
     if(recite.running){
-      recite.running = false;
-      recite.finished = true;
-      try{ recite.rec.abort(); }catch(e){}
+      stopRecite();
+      return;
     }
-    clearTimeout(recite.stopTimer);
-    byId('reciteOverlay').classList.remove('show');
+    if(recite.surah !== surah) openRecite(surah);
+    startRecite();
   }
-  byId('reciteClose').addEventListener('click', closeRecite);
-  byId('reciteOverlay').addEventListener('click', function(e){
-    if(e.target === byId('reciteOverlay')) closeRecite();
-  });
 
 
   // ============ Memorization mode ============
